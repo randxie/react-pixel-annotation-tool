@@ -15,7 +15,7 @@ import ClassSelectionMenu from './ClassSelectionMenu';
 import SidebarBoxContainer from './SideBarBoxContainer';
 import ToolSelectionMenu from './ToolSelectionMenu';
 
-const maskPixelMultiplier: number = 15;
+const maskPixelMultiplier: number = 5;
 
 export const Toolbar: React.FC<any> = ({
   currentWidth,
@@ -98,6 +98,14 @@ export const Toolbar: React.FC<any> = ({
       cv.add(marker, rgbPlanes.get(2), marker)
       rgbPlanes.delete()
 
+      // Use find contour to handle anti-aliasing issue.
+      let contours = new cv.MatVector()
+      let hierachy = new cv.Mat()
+      cv.findContours(marker, contours, hierachy, cv.RETR_CCOMP, cv.CHAIN_APPROX_NONE)
+      cv.drawContours(marker, contours, -1, new cv.Scalar(0), 4)
+      contours.delete()
+      hierachy.delete()
+
       // Use watershed to fill unknown label in the marker Mat.
       cv.watershed(imageMat, marker)
       imageMat.delete()
@@ -112,18 +120,9 @@ export const Toolbar: React.FC<any> = ({
 
         // performance warning!! This part can be quite slow.
         let fullMultiplier = maskPixelMultiplier * 3;
-        let halfMultiplier = fullMultiplier / 2;
         for (let x = 0; x < marker.rows; x++) {
           for (let y = 0; y < marker.cols; y++) {
-            let cls = marker.row(x).col(y).data[0]
-            for (let i = 1; i <= ALL_CLASSES.length; i++) {
-              if (cls >= (fullMultiplier * i - halfMultiplier) &&
-                cls <= (fullMultiplier * i + halfMultiplier)) {
-                cls = i;
-                break;
-              }
-            }
-
+            let cls = marker.row(x).col(y).data[0] / fullMultiplier
             if (cls > 0 && cls <= ALL_CLASSES.length) {
               let colorVec = colorMap[cls - 1]
               if (colorVec) {
@@ -134,10 +133,8 @@ export const Toolbar: React.FC<any> = ({
             }
           }
         }
+        
         marker.delete()
-
-        // median filter as postprocessing
-        cv.medianBlur(coloredMask, coloredMask, 5)
         cv.imshow(canvasRef?.current, coloredMask)
         coloredMask.delete()
       }

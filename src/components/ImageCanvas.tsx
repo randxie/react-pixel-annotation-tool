@@ -20,9 +20,6 @@ export const ImageCanvas: React.FC<any> = ({
     let width = currentWidth
     let widthHalf = currentWidth / 2
 
-    // const [scale, setScale] = React.useState(1.0);
-    // const [lines, setLines] = React.useState([]);
-
     const isDrawing = React.useRef(false);
     const [image, status] = useImage(exampleImage, "Anonymous");
 
