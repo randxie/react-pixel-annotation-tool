@@ -111,33 +111,47 @@ export const Toolbar: React.FC<any> = ({
       imageMat.delete()
 
       if (canvasRef) {
+        marker.convertTo(marker, -1, 1.0 / (maskPixelMultiplier * 3))
+        marker.convertTo(marker, cv.CV_8UC1)
+
+        let coloredMask = new cv.Mat()
+        let mergedPlanes = new cv.MatVector();
+        mergedPlanes.push_back(marker);
+        mergedPlanes.push_back(marker);
+        mergedPlanes.push_back(marker);
+        cv.merge(mergedPlanes, coloredMask)
+
+        marker.delete()
+        mergedPlanes.delete()
+
         // Render the marker into colored mask. The color has been predefined for different classes.
-        let coloredMask = new cv.Mat(marker.rows, marker.cols, cv.CV_8UC3, new cv.Scalar(0, 0, 0));
+        // let coloredMask = new cv.Mat(marker.rows, marker.cols, cv.CV_8UC3, new cv.Scalar(0, 0, 0));
         let colorMap = ALL_CLASSES.map((cls) => {
           let index = ALL_CLASSES.indexOf(cls)
           return hexToRgb(colors[index % colors.length])
         })
 
         // performance warning!! This part can be quite slow.
-        let fullMultiplier = maskPixelMultiplier * 3;
-        for (let x = 0; x < marker.rows; x++) {
-          for (let y = 0; y < marker.cols; y++) {
-            let cls = marker.row(x).col(y).data[0] / fullMultiplier
+        for (let x = 0; x < coloredMask.rows; x++) {
+          let row = coloredMask.row(x)
+          for (let y = 0; y < coloredMask.cols; y++) {
+            let elem = row.col(y)
+            let cls = elem.data[0]
             if (cls > 0 && cls <= ALL_CLASSES.length) {
               let colorVec = colorMap[cls - 1]
               if (colorVec) {
-                coloredMask.row(x).col(y).data[0] = colorVec[0]
-                coloredMask.row(x).col(y).data[1] = colorVec[1]
-                coloredMask.row(x).col(y).data[2] = colorVec[2]
+                elem.data[0] = colorVec[0]
+                elem.data[1] = colorVec[1]
+                elem.data[2] = colorVec[2]
               }
             }
           }
         }
         
-        marker.delete()
         cv.imshow(canvasRef?.current, coloredMask)
         coloredMask.delete()
       }
+     console.log("finished")
 
     }
   }
