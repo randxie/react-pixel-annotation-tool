@@ -131,7 +131,7 @@ export const Toolbar: React.FC<any> = ({
           return hexToRgb(colors[index % colors.length])
         })
 
-        // performance warning!! This part can be quite slow.
+        // Performance warning!! This part be slow.
         for (let x = 0; x < coloredMask.rows; x++) {
           let row = coloredMask.row(x)
           for (let y = 0; y < coloredMask.cols; y++) {
@@ -147,12 +147,9 @@ export const Toolbar: React.FC<any> = ({
             }
           }
         }
-        
         cv.imshow(canvasRef?.current, coloredMask)
         coloredMask.delete()
       }
-     console.log("finished")
-
     }
   }
 
