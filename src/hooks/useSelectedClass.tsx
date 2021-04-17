@@ -7,7 +7,7 @@ export const useSelectedClass = () => {
     const [selectedClass, setSelectedClass] = useState(ALL_CLASSES[0]);
 
     const handleSelectedClass = (e: any) => {
-        setSelectedClass(e)
+        setSelectedClass(e);
     };
 
     return [
@@ -15,7 +15,7 @@ export const useSelectedClass = () => {
             selectedClass,
         },
         {
-            handleSelectedClass
+            handleSelectedClass,
         },
     ] as any;
 };

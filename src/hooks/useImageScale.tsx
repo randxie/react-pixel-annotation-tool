@@ -7,20 +7,19 @@ export const useImageScale = () => {
 
     const handleImageScale = (e: any) => {
         if (typeof e === 'number') {
-            console.log(e)
-            setImageScale(e)
+            console.log(e);
+            setImageScale(e);
         } else {
-            setImageScale(e.currentTarget.value)
+            setImageScale(e.currentTarget.value);
         }
-        
-    };
+  };
 
     return [
         {
             imageScale,
         },
         {
-            handleImageScale
+            handleImageScale,
         },
     ] as any;
 };

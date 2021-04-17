@@ -3,7 +3,7 @@ const ALL_CLASSES = [
     "background",
     "tree",
     "road",
-    "traffic-light"
+    "traffic-light",
 ];
 
-export default ALL_CLASSES
+export default ALL_CLASSES;
