@@ -14,6 +14,8 @@ The tool also uses many excellent packages, such as:
 
 ## Demo
 
+[Try the pixel annotation tool here](https://pixel-annotation-tool.netlify.app/)
+
 ### UI Overview
 ![alt text](doc/generated_mask.png "UI Overview")
 
