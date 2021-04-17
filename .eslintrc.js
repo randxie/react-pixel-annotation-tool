@@ -3,7 +3,4 @@ module.exports = {
     parserOptions: {
         project: './tsconfig.json',
     },
-    rules: {
-        indent: ['error', 4],
-    },
 };

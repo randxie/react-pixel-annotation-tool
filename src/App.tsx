@@ -24,7 +24,7 @@ const App = () => {
 
   const toolbarProps = {
     ...painterState,
-        ...selectedClassState,
+    ...selectedClassState,
     ...imageScaleState,
     ...painterApi,
     ...selectedClassApi,
@@ -32,24 +32,24 @@ const App = () => {
   };
   const imageCanvasProps = {
     ...painterState,
-        ...imageScaleState,
-        ...selectedClassState,
+    ...imageScaleState,
+    ...selectedClassState,
     ...painterApi,
     ...imageScaleApi,
-        canvasSize,
+    canvasSize,
   };
 
   return (
-      <>
-          <Grid container spacing={0}>
-              <Grid item xs={2}>
-                  <Toolbar {...toolbarProps} maskRef={maskRef} imageRef={imageRef} toolbarGridRef={toolbarGridRef} />
-                </Grid>
-              <Grid item xs={10}>
-                  <ImageCanvas {...imageCanvasProps} maskRef={maskRef} imageRef={imageRef} />
-                </Grid>
-            </Grid>
-        </>
+    <>
+      <Grid container spacing={0}>
+        <Grid item xs={2}>
+          <Toolbar {...toolbarProps} maskRef={maskRef} imageRef={imageRef} toolbarGridRef={toolbarGridRef} />
+        </Grid>
+        <Grid item xs={10}>
+          <ImageCanvas {...imageCanvasProps} maskRef={maskRef} imageRef={imageRef} />
+        </Grid>
+      </Grid>
+    </>
   );
 };
 

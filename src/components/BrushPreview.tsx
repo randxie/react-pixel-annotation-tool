@@ -15,8 +15,8 @@ export const BrushPreview: React.FC<Props> = ({
     height: `${currentWidth}px`,
   };
   return (
-      <div className="preview">
-          <div style={styles} className="preview__brush" />
-        </div>
+    <div className="preview">
+      <div style={styles} className="preview__brush" />
+    </div>
   );
 };
