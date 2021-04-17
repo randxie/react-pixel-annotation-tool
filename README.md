@@ -37,11 +37,14 @@ npm start
 
 - [ ] Improve the speed of watershed part. Currently, the rendering of colorful mask is done in pure javascript and can be slow.
 - [ ] Support redo / undo at line level.
-- [ ] Disable anti-aliasing for canvas shape (lines), or reimplement the line rendering algorithm.
 - [ ] Support polygon tool.
 - [ ] Overlay generated mask to image.
 - [ ] Allow loading images from local folders and provide preview of next images.
 - [ ] Add interface to allow custom save, e.g. save to a database. 
+
+## Changelog
+
+- [x] Solve anti-aliasing issue by using findContours and drawContours to handle pixels at edge.
 
 ## References
 
