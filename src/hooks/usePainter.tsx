@@ -1,9 +1,9 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState } from 'react';
 import colors from '../common/colors';
 
 export const usePainter = () => {
   // Brush settings
-  const [currentTool, setCurrentTool] = useState("pen");
+  const [currentTool, setCurrentTool] = useState('pen');
   const [currentColor, setCurrentColor] = useState(colors[0]);
   const [currentWidth, setCurrentWidth] = useState(50);
 
@@ -12,7 +12,7 @@ export const usePainter = () => {
   const [currentMaskOpacity, setCurrentMaskOpacity] = useState(0.4);
 
   const handleColor = (e: any) => {
-    setCurrentColor(e)
+    setCurrentColor(e);
   };
 
   const handleWidth = (e: any) => {
@@ -28,8 +28,8 @@ export const usePainter = () => {
   };
 
   const handleClearMask = () => {
-    setLines([])
-  }
+    setLines([]);
+  };
 
   return [
     {
@@ -37,7 +37,7 @@ export const usePainter = () => {
       currentColor,
       currentTool,
       currentMaskOpacity,
-      lines
+      lines,
     },
     {
       handleColor,
@@ -45,7 +45,7 @@ export const usePainter = () => {
       handleTool,
       handleMaskOpacity,
       handleClearMask,
-      setLines
+      setLines,
     },
   ] as any;
 };

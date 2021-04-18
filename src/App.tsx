@@ -23,12 +23,20 @@ const App = () => {
   const [{ ...imageScaleState }, { ...imageScaleApi }] = useImageScale();
 
   const toolbarProps = {
-    ...painterState, ...selectedClassState, ...imageScaleState,
-    ...painterApi, ...selectedClassApi, ...imageScaleApi
+    ...painterState,
+    ...selectedClassState,
+    ...imageScaleState,
+    ...painterApi,
+    ...selectedClassApi,
+    ...imageScaleApi,
   };
   const imageCanvasProps = {
-    ...painterState, ...imageScaleState, ...selectedClassState,
-    ...painterApi, ...imageScaleApi, canvasSize
+    ...painterState,
+    ...imageScaleState,
+    ...selectedClassState,
+    ...painterApi,
+    ...imageScaleApi,
+    canvasSize,
   };
 
   return (
