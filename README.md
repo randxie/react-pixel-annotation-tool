@@ -37,12 +37,11 @@ npm start
 
 ## Next steps (Roadmap)
 
-- [ ] Improve the speed of watershed part. Currently, the rendering of colorful mask is done in pure javascript and can be slow.
-- [ ] Support redo / undo at line level.
-- [ ] Support polygon tool.
-- [ ] Overlay generated mask to image.
-- [ ] Allow loading images from local folders and provide preview of next images.
-- [ ] Add interface to allow custom save, e.g. save to a database. 
+I supervised a few engineers in Deltron Intelligence to extend this app for production use. See the figure below:
+
+![alt text](images/labeling-system.png "LabelingSystem")
+
+Key technical challenges have been addressed in another of my repo: [emscripten-vision-react-example](https://github.com/randxie/emscripten-vision-react-example)
 
 ## Changelog
 
