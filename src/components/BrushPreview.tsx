@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface Props {
   currentColor: string;
@@ -16,7 +16,7 @@ export const BrushPreview: React.FC<Props> = ({
   };
   return (
     <div className="preview">
-      <div style={styles} className="preview__brush"></div>
+      <div style={styles} className="preview__brush" />
     </div>
   );
 };

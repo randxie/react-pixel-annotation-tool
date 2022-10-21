@@ -35,138 +35,138 @@ export const Toolbar: React.FC<any> = ({
   maskRef,
   toolbarGridRef,
 }) => {
-  const canvasRef = React.useRef()
+  const canvasRef = React.useRef();
 
   // Change mask for watershed algorithm and return a reset func
   // to go back to previous states. It behaves like context manager.
   const makeMaskMutationResetFn = (mask, changeColor) => {
-    var originOpacity = currentMaskOpacity;
-    var shouldChangeColor = changeColor;
+    const originOpacity = currentMaskOpacity;
+    const shouldChangeColor = changeColor;
 
     mask?.getChildren().each((node) => {
       node.opacity(1);
       if (shouldChangeColor) {
-        let maskIdx = ALL_CLASSES.indexOf(node.name()) + 1
+        const maskIdx = ALL_CLASSES.indexOf(node.name()) + 1;
         if (node.name() !== 'eraser') {
           // We can not turn off anti-aliasing in canvas shape. Offset the maskIdx so that
           // it's easier to post-process.
-          let pixelValue = maskPixelMultiplier * maskIdx
-          node.stroke(rgbToHex(pixelValue, pixelValue, pixelValue))
+          const pixelValue = maskPixelMultiplier * maskIdx;
+          node.stroke(rgbToHex(pixelValue, pixelValue, pixelValue));
         } else {
-          node.stroke(rgbToHex(0, 0, 0))
+          node.stroke(rgbToHex(0, 0, 0));
         }
       }
-    })
+    });
 
     function resetMask() {
       // Set mask back to original state
       mask?.getChildren().each((node) => {
         if (shouldChangeColor) {
-          let index = ALL_CLASSES.indexOf(node.name())
-          node.stroke(colors[index % colors.length])
+          const index = ALL_CLASSES.indexOf(node.name());
+          node.stroke(colors[index % colors.length]);
         }
         node.opacity(originOpacity);
-      })
+      });
     }
-    return resetMask
-  }
+    return resetMask;
+  };
 
   const handleWatershed = () => {
-    let currentMask = maskRef?.current
+    const currentMask = maskRef?.current;
     if (currentMask === null) {
-      return
+      return;
     }
 
     if (imageRef?.current) {
       // Load both image and mask
-      let imageMat = cv.imread(imageRef?.current?.toCanvas());
-      cv.cvtColor(imageMat, imageMat, cv.COLOR_RGBA2RGB)
+      const imageMat = cv.imread(imageRef?.current?.toCanvas());
+      cv.cvtColor(imageMat, imageMat, cv.COLOR_RGBA2RGB);
 
-      let resetMaskFn = makeMaskMutationResetFn(currentMask, true)
-      let maskMat = cv.imread(currentMask?.toCanvas());
-      cv.cvtColor(maskMat, maskMat, cv.COLOR_RGBA2RGB)
-      resetMaskFn()
+      const resetMaskFn = makeMaskMutationResetFn(currentMask, true);
+      const maskMat = cv.imread(currentMask?.toCanvas());
+      cv.cvtColor(maskMat, maskMat, cv.COLOR_RGBA2RGB);
+      resetMaskFn();
 
-      let rgbPlanes = new cv.MatVector();
-      maskMat.convertTo(maskMat, cv.CV_32S)
+      const rgbPlanes = new cv.MatVector();
+      maskMat.convertTo(maskMat, cv.CV_32S);
       cv.split(maskMat, rgbPlanes);
-      maskMat.delete()
+      maskMat.delete();
 
       // Create marker for watershed algorithm by summing all channels
-      let marker = new cv.Mat();
-      cv.add(rgbPlanes.get(0), rgbPlanes.get(1), marker)
-      cv.add(marker, rgbPlanes.get(2), marker)
-      rgbPlanes.delete()
+      const marker = new cv.Mat();
+      cv.add(rgbPlanes.get(0), rgbPlanes.get(1), marker);
+      cv.add(marker, rgbPlanes.get(2), marker);
+      rgbPlanes.delete();
 
       // Use find contour to handle anti-aliasing issue.
-      let contours = new cv.MatVector()
-      let hierachy = new cv.Mat()
-      cv.findContours(marker, contours, hierachy, cv.RETR_CCOMP, cv.CHAIN_APPROX_NONE)
-      cv.drawContours(marker, contours, -1, new cv.Scalar(0), 4)
-      contours.delete()
-      hierachy.delete()
+      const contours = new cv.MatVector();
+      const hierachy = new cv.Mat();
+      cv.findContours(marker, contours, hierachy, cv.RETR_CCOMP, cv.CHAIN_APPROX_NONE);
+      cv.drawContours(marker, contours, -1, new cv.Scalar(0), 4);
+      contours.delete();
+      hierachy.delete();
 
       // Use watershed to fill unknown label in the marker Mat.
-      cv.watershed(imageMat, marker)
-      imageMat.delete()
+      cv.watershed(imageMat, marker);
+      imageMat.delete();
 
       if (canvasRef) {
-        marker.convertTo(marker, -1, 1.0 / (maskPixelMultiplier * 3))
-        marker.convertTo(marker, cv.CV_8UC1)
+        marker.convertTo(marker, -1, 1.0 / (maskPixelMultiplier * 3));
+        marker.convertTo(marker, cv.CV_8UC1);
 
-        let coloredMask = new cv.Mat()
-        let mergedPlanes = new cv.MatVector();
+        const coloredMask = new cv.Mat();
+        const mergedPlanes = new cv.MatVector();
         mergedPlanes.push_back(marker);
         mergedPlanes.push_back(marker);
         mergedPlanes.push_back(marker);
-        cv.merge(mergedPlanes, coloredMask)
+        cv.merge(mergedPlanes, coloredMask);
 
-        marker.delete()
-        mergedPlanes.delete()
+        marker.delete();
+        mergedPlanes.delete();
 
         // Render the marker into colored mask. The color has been predefined for different classes.
         // let coloredMask = new cv.Mat(marker.rows, marker.cols, cv.CV_8UC3, new cv.Scalar(0, 0, 0));
-        let colorMap = ALL_CLASSES.map((cls) => {
-          let index = ALL_CLASSES.indexOf(cls)
-          return hexToRgb(colors[index % colors.length])
-        })
+        const colorMap = ALL_CLASSES.map((cls) => {
+          const index = ALL_CLASSES.indexOf(cls);
+          return hexToRgb(colors[index % colors.length]);
+        });
 
         // Performance warning!! This part be slow.
         for (let x = 0; x < coloredMask.rows; x++) {
-          let row = coloredMask.row(x)
+          const row = coloredMask.row(x);
           for (let y = 0; y < coloredMask.cols; y++) {
-            let elem = row.col(y)
-            let cls = elem.data[0]
+            const elem = row.col(y);
+            const cls = elem.data[0];
             if (cls > 0 && cls <= ALL_CLASSES.length) {
-              let colorVec = colorMap[cls - 1]
+              const colorVec = colorMap[cls - 1];
               if (colorVec) {
-                elem.data[0] = colorVec[0]
-                elem.data[1] = colorVec[1]
-                elem.data[2] = colorVec[2]
+                elem.data[0] = colorVec[0];
+                elem.data[1] = colorVec[1];
+                elem.data[2] = colorVec[2];
               }
             }
           }
         }
-        cv.imshow(canvasRef?.current, coloredMask)
-        coloredMask.delete()
+        cv.imshow(canvasRef?.current, coloredMask);
+        coloredMask.delete();
       }
     }
-  }
+  };
 
   const handleClear = () => {
-    handleClearMask()
-  }
+    handleClearMask();
+  };
 
   const handleDownload = (mask, name) => {
     if (mask?.current === null) {
-      return
+      return;
     }
 
-    let link = Array.from(document.getElementsByTagName("a")).find(
-      (a) => a.download === name
-    )
+    const link = Array.from(document.getElementsByTagName('a')).find(
+      (a) => a.download === name,
+    );
 
-    let resetMaskFn = makeMaskMutationResetFn(mask.current, false)
+    const resetMaskFn = makeMaskMutationResetFn(mask.current, false);
 
     if (!link) {
       const link = document.createElement('a');
@@ -181,8 +181,8 @@ export const Toolbar: React.FC<any> = ({
       document.body.removeChild(link);
     }
 
-    resetMaskFn()
-  }
+    resetMaskFn();
+  };
 
   return (
     <aside>
@@ -194,10 +194,11 @@ export const Toolbar: React.FC<any> = ({
           <canvas
             ref={canvasRef}
             width={toolbarGridRef ? toolbarGridRef.current ? toolbarGridRef.current.offsetWidth : 0 : 0}
-            height={120} />
+            height={120}
+          />
         </SidebarBoxContainer>
 
-        <Grid direction={'column'} spacing={4}>
+        <Grid direction="column" spacing={4}>
           <Grid>
             <div className="tool-section tool-section--lrg">
               <small>
@@ -209,18 +210,20 @@ export const Toolbar: React.FC<any> = ({
               aria-label="outlined primary button group"
             >
               <Button
-                onClick={handleWatershed}>
+                onClick={handleWatershed}
+              >
                 Watershed
               </Button>
 
               <Button
-                onClick={() => { handleDownload(maskRef, "mask.png") }}
+                onClick={() => { handleDownload(maskRef, 'mask.png'); }}
               >
                 Save
               </Button>
 
               <Button
-                onClick={handleClear}>
+                onClick={handleClear}
+              >
                 Clear
               </Button>
             </ButtonGroup>
@@ -245,7 +248,9 @@ export const Toolbar: React.FC<any> = ({
               <small>
                 <strong>Brush Preview</strong>
               </small>
-              <BrushPreview currentWidth={currentWidth} currentColor={currentColor}
+              <BrushPreview
+                currentWidth={currentWidth}
+                currentColor={currentColor}
               />
             </div>
           </Grid>
@@ -293,7 +298,7 @@ export const Toolbar: React.FC<any> = ({
               <ToolSelectionMenu
                 selectedTool={currentTool}
                 onSelectTool={(label: string) => {
-                  handleTool(label)
+                  handleTool(label);
                 }}
               />
             </div>
@@ -311,7 +316,7 @@ export const Toolbar: React.FC<any> = ({
                 regionClsList={ALL_CLASSES}
                 onSelectCls={(label: string) => {
                   handleSelectedClass(label);
-                  handleColor(colors[ALL_CLASSES.indexOf(label) % colors.length])
+                  handleColor(colors[ALL_CLASSES.indexOf(label) % colors.length]);
                 }}
               />
             </div>
